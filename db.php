@@ -25,7 +25,7 @@ class Database {
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-          
+            // Display results in a table
             echo '<table border="1">';
             echo '<tr><th>ID</th><th>Naam</th><th>Achternaam</th><th>Email</th><th>Edit</th><th>Delete</th></tr>';
             foreach ($result as $row) {
