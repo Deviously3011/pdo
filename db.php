@@ -22,7 +22,7 @@ class Database {
             $stmt->bindParam(':email', $email);
 
             $stmt->execute();
-            echo "Data added successfully";
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch(PDOException $e) {
             echo "Error adding data: " . $e->getMessage();
         }
