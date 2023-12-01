@@ -7,18 +7,8 @@ $database = new Database();
 if (isset($_GET['id'])) {
     $contactId = $_GET['id'];
 
-    // Check if the form is submitted (for editing or deleting)
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Check if the Delete button is clicked
-        if (isset($_POST['delete_contact'])) {
-            // Delete contact from the database
-            $database->deleteContact($contactId);
-
-            // Redirect to the home page or any other desired page after deletion
-            header("Location: home.php");
-            exit();
-        }
-
+    // Check if the form is submitted for editing
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_contact'])) {
         // Get form data for editing
         $naam = $_POST['naam'];
         $achternaam = $_POST['achternaam'];
@@ -29,6 +19,16 @@ if (isset($_GET['id'])) {
         $database->editContact($contactId, $naam, $achternaam, $email, $telefoonnummer);
 
         // Redirect to the home page or any other desired page after editing
+        header("Location: home.php");
+        exit();
+    }
+
+    // Check if the form is submitted for deleting
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_contact'])) {
+        // Delete contact from the database
+        $database->deleteContact($contactId);
+
+        // Redirect to the home page or any other desired page after deletion
         header("Location: home.php");
         exit();
     }
@@ -101,7 +101,7 @@ if (isset($_GET['id'])) {
 
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" name="email" class="form-control" value="<?php echo $email; ?>" required>
+            <input type="email" name="email"\ class="form-control" value="<?php echo $email; ?>" required>
         </div>
 
         <div class="form-group">
@@ -109,7 +109,8 @@ if (isset($_GET['id'])) {
             <input type="text" name="telefoonnummer" class="form-control" value="<?php echo $telefoonnummer; ?>" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <!-- Use different names for the submit buttons -->
+        <button type="submit" name="edit_contact" class="btn btn-primary">Save Changes</button>
 
         <!-- Add a Delete button -->
         <button type="submit" name="delete_contact" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this contact?')">Delete</button>

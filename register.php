@@ -10,9 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $achternaam = $_POST['achternaam'];
     $email = $_POST['email'];
     $telefoonnummer = $_POST['telefoonnummer'];
+    
+    // Get the password and hash it before storing it in the database
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
     // Add contact to the database
-    $database->addContact($naam, $achternaam, $email, $telefoonnummer);
+    $database->addContact($naam, $achternaam, $email, $telefoonnummer, $password);
 }
 ?>
 
@@ -38,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a class="nav-link" href="home.php">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="edit_contact.php">Edit Contact</a>
+                <a class="nav-link" href="login.php">Login</a>
             </li>
         </ul>
     </div>
@@ -66,6 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="form-group">
             <label for="telefoonnummer">Phone Number:</label>
             <input type="text" name="telefoonnummer" class="form-control" required>
+        </div>
+
+        <!-- New password field -->
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" name="password" class="form-control" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Register</button>

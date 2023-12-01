@@ -1,7 +1,13 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user']) || $_SESSION['user'] !== 'admin') {
+    header('Location: login.php');
+    exit();
+}
+
 include 'db.php';
-$pdo = connectToDatabase();
-$database = new Database($pdo);
+$database = new Database();
 ?>
 
 <!DOCTYPE html>
@@ -34,15 +40,13 @@ $database = new Database($pdo);
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
                 <a class="nav-link" href="home.php">Home</a>
             </li>
+         
             <li class="nav-item">
-                <a class="nav-link" href="edit_contact.php">Edit Contact</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="register.php">Register</a>
+                <a class="nav-link" href="logout.php">Logout</a>
             </li>
         </ul>
     </div>
@@ -51,35 +55,9 @@ $database = new Database($pdo);
 <div class="container">
     <h1 class="mt-4">Contact List</h1>
 
-    <div class="row">
-        <div class="col-md-6">
-            <h2>Add Contact</h2>
-            <form action="register.php" method="post">
-                <!-- Form fields for adding contacts go here -->
-                <button type="submit" class="btn btn-primary">Add Contact</button>
-            </form>
-        </div>
-
-        <div class="col-md-6">
-            <h2>Delete Contact</h2>
-            <form method="post" action="edit_contact.php">
-                <div class="form-group">
-                    <label for="deleteContactId">Enter ID to delete:</label>
-                    <input type="number" class="form-control" name="deleteContact" id="deleteContactId" required>
-                </div>
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-        </div>
-    </div>
-
     <div class="table-container">
         <h2 class="mt-4">Contact List</h2>
         <?php
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteContact'])) {
-            $contactIdToDelete = $_POST['deleteContact'];
-            $database->deleteContact($contactIdToDelete);
-        }
-
         $database->selectData();
         ?>
     </div>
@@ -88,6 +66,12 @@ $database = new Database($pdo);
 <script>
     function editContact(contactId) {
         window.location.href = 'edit_contact.php?id=' + contactId;
+    }
+
+    function deleteContact(contactId) {
+        if (confirm('Are you sure you want to delete this contact?')) {
+            window.location.href = 'delete_contact.php?id=' + contactId;
+        }
     }
 </script>
 

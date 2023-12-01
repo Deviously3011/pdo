@@ -1,26 +1,21 @@
 <?php
 
-function connectToDatabase() {
-    $host = 'localhost:3307';
-    $dbname = 'contactdb';
-    $username = 'root';
-    $password = '';
-
-    try {
-        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $pdo;
-    } catch (PDOException $e) {
-        die("Connection failed: " . $e->getMessage());
-    }
-}
-
 class Database {
     private $pdo;
 
     public function __construct() {
-        // Use the connectToDatabase function to get the PDO instance
-        $this->pdo = connectToDatabase();
+        // Adjust these parameters based on your database configuration
+        $host = 'localhost:3307';
+        $dbname = 'contactdb';
+        $username = 'root';
+        $password = '';
+
+        try {
+            $this->pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            die("Connection failed: " . $e->getMessage());
+        }
     }
 
     public function selectData($id = null) {
@@ -50,35 +45,37 @@ class Database {
             echo '</table>';
 
             return $result;
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             $this->handleError("Error selecting data", $e);
         }
     }
 
-    public function addContact($naam, $achternaam, $email, $telefoonnummer) {
+    public function addContact($naam, $achternaam, $email, $telefoonnummer, $password) {
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO contacts (naam, achternaam, email, telefoonnummer) VALUES (:naam, :achternaam, :email, :telefoonnummer)");
+            $stmt = $this->pdo->prepare("INSERT INTO contacts (naam, achternaam, email, telefoonnummer, password) VALUES (:naam, :achternaam, :email, :telefoonnummer, :password)");
             $stmt->bindParam(':naam', $naam);
             $stmt->bindParam(':achternaam', $achternaam);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':telefoonnummer', $telefoonnummer);
+            $stmt->bindParam(':password', $password);
 
             $stmt->execute();
             echo "Contact added successfully";
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             $this->handleError("Error adding contact", $e);
         }
     }
 
-    public function deleteContact($id) {
+    public function getPasswordByEmail($email) {
         try {
-            $stmt = $this->pdo->prepare("DELETE FROM contacts WHERE id = :id");
-            $stmt->bindParam(':id', $id);
-
+            $stmt = $this->pdo->prepare("SELECT password FROM contacts WHERE email = :email");
+            $stmt->bindParam(':email', $email);
             $stmt->execute();
-            echo "Contact deleted successfully";
-        } catch(PDOException $e) {
-            $this->handleError("Error deleting contact", $e);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $result ? $result['password'] : null;
+        } catch (PDOException $e) {
+            $this->handleError("Error getting password by email", $e);
         }
     }
 
@@ -98,12 +95,25 @@ class Database {
         }
     }
 
-    // Additional helper method for error handling
+    public function deleteContact($id) {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM contacts WHERE id = :id");
+            $stmt->bindParam(':id', $id);
+
+            $stmt->execute();
+            echo "Contact deleted successfully";
+        } catch (PDOException $e) {
+            $this->handleError("Error deleting contact", $e);
+        }
+    }
+
+    public function getAdminPassword() {
+        return 'admin'; // Replace with your actual admin password
+    }
+
     private function handleError($message, $exception) {
         // Log the error for your reference
         error_log("$message: " . $exception->getMessage());
         echo "An error occurred. Please try again later.";
     }
 }
-
-?>
