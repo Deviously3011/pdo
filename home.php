@@ -1,13 +1,19 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['user']) || $_SESSION['user'] !== 'admin') {
+// Check if the user is not logged in
+if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit();
 }
 
+// Include the Database class and connect to the database
 include 'db.php';
 $database = new Database();
+
+// Generate a random page link
+$pages = ['page1.php', 'page2.php', 'page3.php']; // Add more pages as needed
+$randomPage = $pages[array_rand($pages)];
 ?>
 
 <!DOCTYPE html>
@@ -15,7 +21,7 @@ $database = new Database();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact List</title>
+    <title>Home</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -24,10 +30,6 @@ $database = new Database();
         }
 
         .container {
-            margin-top: 20px;
-        }
-
-        .table-container {
             margin-top: 20px;
         }
     </style>
@@ -41,10 +43,7 @@ $database = new Database();
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="home.php">Home</a>
-            </li>
-         
+           
             <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>
             </li>
@@ -53,27 +52,9 @@ $database = new Database();
 </nav>
 
 <div class="container">
-    <h1 class="mt-4">Contact List</h1>
-
-    <div class="table-container">
-        <h2 class="mt-4">Contact List</h2>
-        <?php
-        $database->selectData();
-        ?>
-    </div>
+    <h1 class="mt-4">Welcome, <?php echo $_SESSION['user']; ?>!</h1>
+    <p>You are logged in finnaly </p>
 </div>
-
-<script>
-    function editContact(contactId) {
-        window.location.href = 'edit_contact.php?id=' + contactId;
-    }
-
-    function deleteContact(contactId) {
-        if (confirm('Are you sure you want to delete this contact?')) {
-            window.location.href = 'delete_contact.php?id=' + contactId;
-        }
-    }
-</script>
 
 </body>
 </html>

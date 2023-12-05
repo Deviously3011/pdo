@@ -11,11 +11,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $telefoonnummer = $_POST['telefoonnummer'];
     
-    // Get the password and hash it before storing it in the database
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    // Check if the email already exists in the database
+    $existingEmail = $database->getPasswordByEmail($email);
 
-    // Add contact to the database
-    $database->addContact($naam, $achternaam, $email, $telefoonnummer, $password);
+    if ($existingEmail) {
+        // Email already in use, handle accordingly (e.g., display an error message)
+        echo '<p style="color: red;">Email is already in use. Choose another email.</p>';
+    } else {
+        // Get the password and hash it before storing it in the database
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+        // Add contact to the database
+        $database->addContact($naam, $achternaam, $email, $telefoonnummer, $password);
+        echo '<p style="color: green;">Registration successful!</p>';
+    }
 }
 ?>
 

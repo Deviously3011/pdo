@@ -9,14 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $identifier = isset($_POST['identifier']) ? $_POST['identifier'] : '';
     $password = $_POST['password'];
 
-    // Check if it's an admin login
-    if ($identifier === 'admin' && $password === $database->getAdminPassword()) {
-        $_SESSION['user'] = 'admin';
-        header('Location: home.php');
-        exit();
-    }
-
-    // For regular user login, continue with the existing logic
+    // Fetch the hashed password from the database based on the email or name
     $hashedPassword = $database->getPasswordByEmail($identifier);
 
     // Verify the entered password
@@ -29,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
